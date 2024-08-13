@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 
 const register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   try {
     db.query(
       "SELECT email FROM users WHERE email = ?",
@@ -20,8 +20,8 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         db.query(
-          "INSERT INTO users (email, password) VALUES (?, ?)",
-          [email, hashedPassword],
+          "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+          [email, hashedPassword, role],
           (err, results) => {
             if (err) {
               console.error("Error during query:", err);

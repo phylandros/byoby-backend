@@ -37,7 +37,7 @@ const getRecommendations = (req, res) => {
       description: result.description,
       category: result.category,
       color: result.color,
-      review: result.review || '' // Ensure review is a string
+      review: result.review || '' 
     }));
 
     console.log('Processed items:', items);
