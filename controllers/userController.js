@@ -79,6 +79,7 @@ const db = require("../config/db");
 const bcrypt = require('bcrypt');
 const { verifyToken } = require("../config/middleware");
 
+
 exports.getAllUsers = [verifyToken, (req, res) => {
   const query = `
     SELECT *

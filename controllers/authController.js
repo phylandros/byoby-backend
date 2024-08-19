@@ -72,4 +72,48 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    // Check if user exists
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+      if (err) {
+        console.error("Error during query:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const user = results[0];
+
+      // Set the default password
+      const defaultPassword = '12345678';
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+      // Update the user's password in the database
+      db.query(
+        'UPDATE users SET password = ? WHERE email = ?',
+        [hashedPassword, email],
+        (err, results) => {
+          if (err) {
+            console.error("Error during query:", err);
+            return res.status(500).json({ message: "Internal server error" });
+          }
+          res.status(200).json({ message: `Password has been reset to ${defaultPassword}` });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error processing forgot password request:", error);
+    res.status(500).json({ message: "An error occurred, please try again later" });
+  }
+};
+
+module.exports = { register, login, forgotPassword };
